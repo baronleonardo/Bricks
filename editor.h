@@ -2,11 +2,12 @@
 #define EDITOR_H
 
 #include <QTextEdit>
+#include <QWidget>
 
 class Editor : public QTextEdit
 {
 public:
-    Editor();
+    Editor(QWidget* parent);
     ~Editor();
 };
 

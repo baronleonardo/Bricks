@@ -1,7 +1,6 @@
 #include "editor.h"
 
-Editor::Editor() {
-
+Editor::Editor(QWidget *parent) : QTextEdit(parent) {
 }
 
 Editor::~Editor() {

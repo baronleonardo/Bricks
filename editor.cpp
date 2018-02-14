@@ -2,6 +2,8 @@
 
 Editor::Editor(QWidget *parent) :
     QTextEdit(parent) {
+    this->open("/tmp/main.cpp");
+    this->findall("e");
 }
 
 void Editor::save() {
@@ -33,7 +35,7 @@ void Editor::open(QString path) {
         return;
 
     // clear textedit widget if there is old text
-    if(!this->toPlainText().isEmpty())
+    if(!this->document()->isEmpty())
         this->clear();
 
     this->setText(this->stream->readAll());

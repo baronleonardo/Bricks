@@ -2,7 +2,6 @@
 
 Editor::Editor(QWidget *parent) :
     QTextEdit(parent) {
-    this->open("/tmp/main.cpp");
 }
 
 void Editor::save() {
@@ -38,6 +37,34 @@ void Editor::open(QString path) {
         this->clear();
 
     this->setText(this->stream->readAll());
+}
+
+void Editor::find(QString exp, bool firstMatchOnly) {
+    // get current cursor position
+    QTextCursor cursor = this->textCursor();
+    // find from that position next occurance of exp
+    int index = this->toPlainText().indexOf(exp, cursor.position());
+
+    QTextCharFormat format = QTextCharFormat();
+    format.setBackground(findExp_highlightColor);
+
+    while(index != -1) {
+        cursor.setPosition(index);
+        cursor.setPosition(index + exp.length(), QTextCursor::KeepAnchor);
+        cursor.mergeCharFormat(format);
+
+        if(firstMatchOnly) return;
+
+        index = this->toPlainText().indexOf(exp, index + exp.length());
+    }
+}
+
+void Editor::find(QString exp) {
+    this->find(exp, true);
+}
+
+void Editor::findall(QString exp) {
+    this->find(exp, false);
 }
 
 Editor::~Editor() {

@@ -18,11 +18,17 @@ public:
 private:
     QFile* file = NULL;
     QTextStream *stream = NULL;
+    const QBrush findExp_highlightColor = Qt::yellow;
     bool prepare_file(QString path);
+    void find(QString exp, bool firstMatchOnly);
 
 public slots:
     void save();
     void open(QString path);
+    // TODO: need to search by regex too
+    // find her will start searching from the cursor position
+    void find(QString exp);
+    void findall(QString exp);
 };
 
 #endif // EDITOR_H

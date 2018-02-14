@@ -2,8 +2,6 @@
 
 Editor::Editor(QWidget *parent) :
     QTextEdit(parent) {
-    this->open("/tmp/main.cpp");
-    this->findall("e");
 }
 
 void Editor::save() {

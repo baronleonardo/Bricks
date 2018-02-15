@@ -13,18 +13,15 @@ class Editor : public QTextEdit
 
 public:
     Editor(QWidget* parent = NULL);
+    bool write(QTextStream* file_stream);
     ~Editor();
 
 private:
-    QFile* file = NULL;
-    QTextStream *stream = NULL;
     const QBrush findExp_highlightColor = Qt::yellow;
-    bool prepare_file(QString path);
     void find(QString exp, bool firstMatchOnly);
+    int currentSearchIndex = -1;
 
 public slots:
-    void save();
-    void open(QString path);
     // TODO: need to search by regex too
     // find her will start searching from the cursor position
     void find(QString exp);

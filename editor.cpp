@@ -4,58 +4,52 @@ Editor::Editor(QWidget *parent) :
     QTextEdit(parent) {
 }
 
-void Editor::save() {
-    if(!stream) return;
-
-    // TODO: optimization
-    // delete the old text first
-    file->resize(0);
-    *stream << this->toPlainText();
-    stream->flush();
-}
-
-bool Editor::prepare_file(QString path) {
-    // if there was an old opened file
-    if(file) delete file;
-    if(stream) delete stream;
-
-    this->file = new QFile(path);
-    if( !this->file->open(QIODevice::ReadWrite | QIODevice::Text) )
+bool Editor::write(QTextStream* file_stream) {
+    if(!file_stream->device()->isReadable())
         return false;
 
-    stream = new QTextStream(file);
+    // TODO: need optimizations
+    this->setPlainText(file_stream->readAll());
 
     return true;
 }
 
-void Editor::open(QString path) {
-    if(!prepare_file(path))
+void Editor::find(QString exp, bool firstMatchOnly) {
+
+    if(this->document()->isEmpty())
         return;
 
-    // clear textedit widget if there is old text
-    if(!this->document()->isEmpty())
-        this->clear();
-
-    this->setText(this->stream->readAll());
-}
-
-void Editor::find(QString exp, bool firstMatchOnly) {
     // get current cursor position
-    QTextCursor cursor = this->textCursor();
+    QTextCursor cursor;
+
+    if(firstMatchOnly) {
+        if(this->currentSearchIndex == -1)
+            cursor = this->textCursor();
+    }
+
+    else
+        cursor = this->cursorForPosition(0);
+
     // find from that position next occurance of exp
-    int index = this->toPlainText().indexOf(exp, cursor.position());
+    this->currentSearchIndex =
+            this->toPlainText().indexOf( exp, cursor.position() );
 
     QTextCharFormat format = QTextCharFormat();
     format.setBackground(findExp_highlightColor);
 
-    while(index != -1) {
-        cursor.setPosition(index);
-        cursor.setPosition(index + exp.length(), QTextCursor::KeepAnchor);
+    while(this->currentSearchIndex != -1) {
+        // mark the matched exp
+        cursor.setPosition(this->currentSearchIndex);
+        cursor.setPosition( this->currentSearchIndex + exp.length(),
+                            QTextCursor::KeepAnchor );
+        // highlight it
         cursor.mergeCharFormat(format);
 
-        if(firstMatchOnly) return;
+        // update the search index
+        this->currentSearchIndex =
+                this->toPlainText().indexOf( exp, this->currentSearchIndex + exp.length() );
 
-        index = this->toPlainText().indexOf(exp, index + exp.length());
+        if(firstMatchOnly) return;
     }
 }
 
@@ -68,6 +62,4 @@ void Editor::findall(QString exp) {
 }
 
 Editor::~Editor() {
-    if(file) delete file;
-    if(stream) delete stream;
 }

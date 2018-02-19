@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QTextStream>
 #include <QString>
-#include <QFile>
+#include <QTextCursor>
 
 class Editor : public QTextEdit
 {
@@ -17,15 +17,28 @@ public:
     ~Editor();
 
 private:
+    class SearchResultProperties {
+        public: QBrush bg_color;
+        public: QTextCursor cursor;
+    };
+
+private:
+    // `find` variables
+    QTextCursor findExp_cursor;
+    bool canContinueSearchingFromTop = true;
+    bool foundSearchMatch = false;
+
+    // `findall` variables
     const QBrush findExp_highlightColor = Qt::yellow;
-    void find(QString exp, bool firstMatchOnly);
-    int currentSearchIndex = -1;
+    QList<SearchResultProperties> searchResultList;
 
 public slots:
     // TODO: need to search by regex too
-    // find her will start searching from the cursor position
+    // find here will start searching from the cursor position
+    void find();
     void find(QString exp);
     void findall(QString exp);
+    void clearSearchHighlight();
 };
 
 #endif // EDITOR_H

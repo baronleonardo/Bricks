@@ -1,4 +1,6 @@
 #include "editor.h"
+#include <QMessageBox>
+#include <QTextCharFormat>
 
 Editor::Editor(QWidget *parent) :
     QTextEdit(parent) {
@@ -14,51 +16,101 @@ bool Editor::write(QTextStream* file_stream) {
     return true;
 }
 
-void Editor::find(QString exp, bool firstMatchOnly) {
+void Editor::find() {
+//    lineSel.format.setBackground(Qt::blue);
+//    this->extraSelections()[0].format.setBackground(Qt::blue);
+    this->findall("Editor::~Editor()");
+//    clearSearchHighlight();
+}
+
+void Editor::find(QString exp) {
+    int index;
 
     if(this->document()->isEmpty())
         return;
 
-    // get current cursor position
-    QTextCursor cursor;
+    if( this->findExp_cursor.isNull() )
+        this->findExp_cursor = this->textCursor();
 
-    if(firstMatchOnly) {
-        if(this->currentSearchIndex == -1)
-            cursor = this->textCursor();
-    }
+    // search
+    index = this->toPlainText().indexOf(exp, this->findExp_cursor.position());
 
-    else
-        cursor = this->cursorForPosition(0);
+    //if found match
+    if(index != -1) {
+        foundSearchMatch = true;
+        canContinueSearchingFromTop = true;
 
-    // find from that position next occurance of exp
-    this->currentSearchIndex =
-            this->toPlainText().indexOf( exp, cursor.position() );
-
-    QTextCharFormat format = QTextCharFormat();
-    format.setBackground(findExp_highlightColor);
-
-    while(this->currentSearchIndex != -1) {
         // mark the matched exp
-        cursor.setPosition(this->currentSearchIndex);
-        cursor.setPosition( this->currentSearchIndex + exp.length(),
-                            QTextCursor::KeepAnchor );
-        // highlight it
-        cursor.mergeCharFormat(format);
-
-        // update the search index
-        this->currentSearchIndex =
-                this->toPlainText().indexOf( exp, this->currentSearchIndex + exp.length() );
-
-        if(firstMatchOnly) return;
+        this->findExp_cursor.setPosition(index);
+        this->findExp_cursor.setPosition( this->findExp_cursor.position() + exp.length(),
+                                  QTextCursor::KeepAnchor );
+        // select it
+        this->setTextCursor(this->findExp_cursor);
     }
-}
 
-void Editor::find(QString exp) {
-    this->find(exp, true);
+    else {
+        // try search from the top of the document
+        if(canContinueSearchingFromTop) {
+            canContinueSearchingFromTop = false;
+            this->findExp_cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+            find(exp);
+        }
+
+        // show warning msg if no match at all
+        else if(!foundSearchMatch) {
+            QMessageBox::warning(this, "Warning", "No match found");
+            foundSearchMatch = false;
+        }
+    }
 }
 
 void Editor::findall(QString exp) {
-    this->find(exp, false);
+    if(this->document()->isEmpty())
+        return;
+
+    int index;
+    QTextCursor cursor;
+    QTextCharFormat findExp_format;
+    findExp_format.setBackground(findExp_highlightColor);
+
+    // move it the beginning of the document
+    cursor = this->textCursor();
+    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+
+    // search
+    index = this->toPlainText().indexOf(exp, cursor.position());
+
+    if(index == -1)
+        QMessageBox::warning(this, "Warning", "No match found");
+
+    else {
+        while (index != -1) {
+            // mark the matched exp
+            cursor.setPosition(index);
+            cursor.setPosition( cursor.position() + exp.length(),
+                                QTextCursor::KeepAnchor );
+
+            // save current search result properties for clearing it
+            // after finishing searching
+            searchResultList.append( { this->findExp_cursor.charFormat().background(),
+                                       cursor } );
+
+            // highlight it
+            cursor.mergeCharFormat(findExp_format);
+
+            // update search index
+            index = this->toPlainText().indexOf(exp, cursor.position());
+        }
+    }
+}
+
+void Editor::clearSearchHighlight() {
+    QTextCharFormat format;
+
+    foreach (Editor::SearchResultProperties searchFoundProperties, searchResultList) {
+        format.setBackground(searchFoundProperties.bg_color);
+        searchFoundProperties.cursor.mergeCharFormat(format);
+    }
 }
 
 Editor::~Editor() {

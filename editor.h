@@ -35,7 +35,6 @@ private:
 public slots:
     // TODO: need to search by regex too
     // find here will start searching from the cursor position
-    void find();
     void find(QString exp);
     void findall(QString exp);
     void clearSearchHighlight();

@@ -16,13 +16,6 @@ bool Editor::write(QTextStream* file_stream) {
     return true;
 }
 
-void Editor::find() {
-//    lineSel.format.setBackground(Qt::blue);
-//    this->extraSelections()[0].format.setBackground(Qt::blue);
-    this->findall("Editor::~Editor()");
-//    clearSearchHighlight();
-}
-
 void Editor::find(QString exp) {
     int index;
 

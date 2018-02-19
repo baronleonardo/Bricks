@@ -1,13 +1,13 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QWidget>
 #include <QTextStream>
 #include <QString>
 #include <QTextCursor>
 
-class Editor : public QTextEdit
+class Editor : public QPlainTextEdit
 {
     Q_OBJECT
 

@@ -3,7 +3,7 @@
 #include <QTextCharFormat>
 
 Editor::Editor(QWidget *parent) :
-    QTextEdit(parent) {
+    QPlainTextEdit(parent) {
 }
 
 bool Editor::write(QTextStream* file_stream) {

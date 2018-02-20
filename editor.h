@@ -13,7 +13,6 @@ class Editor : public QPlainTextEdit
 
 public:
     Editor(QWidget* parent = NULL);
-    bool write(QTextStream* file_stream);
     ~Editor();
 
 private:
@@ -32,7 +31,8 @@ private:
     const QBrush findExp_highlightColor = Qt::yellow;
     QList<SearchResultProperties> searchResultList;
 
-public slots:
+public:
+    bool write(QTextStream* file_stream);
     // TODO: need to search by regex too
     // find here will start searching from the cursor position
     void find(QString exp);

@@ -37,6 +37,8 @@ public slots:
     // find here will start searching from the cursor position
     void find(QString exp);
     void findall(QString exp);
+    void replace(QString exp, QString replacement);
+    void replaceall(QString exp, QString replacement);
     void clearSearchHighlight();
 };
 

@@ -1,9 +1,11 @@
 #include "editor.h"
 #include <QMessageBox>
 #include <QTextCharFormat>
+#include <QTextDocumentFragment>
 
 Editor::Editor(QWidget *parent) :
     QPlainTextEdit(parent) {
+    this->setLineWrapMode(QPlainTextEdit::NoWrap);
 }
 
 bool Editor::write(QTextStream* file_stream) {
@@ -95,6 +97,29 @@ void Editor::findall(QString exp) {
             index = this->toPlainText().indexOf(exp, cursor.position());
         }
     }
+}
+
+void Editor::replace(QString exp, QString replacement) {
+    // replacement is done by finding and highlighting `exp` first
+    // then replace it
+    if(this->findExp_cursor.hasSelection())
+        this->insertPlainText(replacement);
+
+    this->find(exp);
+}
+
+void Editor::replaceall(QString exp, QString replacement) {
+    // mark all change in replacement as once block to be undo at one time
+    QTextCursor cursor = this->textCursor();
+    cursor.beginEditBlock();
+
+    do {
+        this->find(exp);
+        if(this->findExp_cursor.hasSelection())
+            this->insertPlainText(replacement);
+    } while(this->canContinueSearchingFromTop == true);
+
+    cursor.endEditBlock();
 }
 
 void Editor::clearSearchHighlight() {

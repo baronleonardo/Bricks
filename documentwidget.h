@@ -1,27 +1,49 @@
-#ifndef TABWIDGET_H
-#define TABWIDGET_H
+#ifndef DOCUMENTWIDGET_H
+#define DOCUMENTWIDGET_H
 
 #include <QWidget>
 #include <QTextEdit>
 #include <QGridLayout>
+#include <QFile>
+#include <QTextStream>
+#include <QShortcut>
 
-class TabWidget : public QWidget
+class DocumentWidget : public QWidget
 {
     Q_OBJECT
+
 public:
-    explicit TabWidget(QWidget *parent = nullptr);
-    static QString getTabName(QString path);
-    ~TabWidget();
+    explicit DocumentWidget(QWidget *parent = nullptr);
+    QString getDocumentName();
+    ~DocumentWidget();
+
+public:
+    enum DocumentState {
+        Modified,
+        Saved
+    };
 
 private:
     QTextEdit* textEdit_widget;
     QGridLayout* layout;
+    QFile* file = NULL;
+    QTextStream* file_textStream = NULL;
+    const QFile::OpenMode file_openModeFlags = QFile::ReadWrite | QFile::Text;
+
+private:
     void configure_layout();
     void configure_textEdit_widget();
+    void configure_shortcuts();
+    static QString calculateDocumentName(QString path);
 
 signals:
+    void documentStateChanged(DocumentState state);
 
 public slots:
+    bool document_new();
+    bool document_open(QString path);
+    bool document_save();
+    bool close();
 };
 
-#endif // TABWIDGET_H
+#endif // DOCUMENTWIDGET_H

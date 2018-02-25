@@ -29,6 +29,7 @@ private:
     QFile* file = NULL;
     QTextStream* file_textStream = NULL;
     const QFile::OpenMode file_openModeFlags = QFile::ReadWrite | QFile::Text;
+    QString fileName = "";
 
 private:
     void configure_layout();
@@ -37,7 +38,8 @@ private:
     static QString calculateDocumentName(QString path);
 
 signals:
-    void documentStateChanged(DocumentState state);
+    void documentModified(bool changed);
+    void documentNameChanged(QString newName);
 
 public slots:
     bool document_new();

@@ -3,6 +3,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <QTextDocument>
 
 DocumentWidget::DocumentWidget(QWidget *parent)
     : QWidget(parent) {
@@ -24,9 +25,9 @@ DocumentWidget::DocumentWidget(QWidget *parent)
     this->configure_shortcuts();
 
     // send signal on document modification
-    connect( textEdit_widget,
-             &QTextEdit::textChanged,
-             [=](){emit this->documentStateChanged(Modified);} );
+    connect( textEdit_widget->document(),
+             &QTextDocument::modificationChanged,
+             [=](bool changed){emit this->documentModified(changed);});
 }
 
 void DocumentWidget::configure_layout() {
@@ -52,7 +53,7 @@ void DocumentWidget::configure_shortcuts() {
     connect( new QShortcut(QKeySequence("Ctrl+Shift+S"), this),
              &QShortcut::activated,
              this,
-             &DocumentWidget::document_save );
+             [=](){this->document_new(); this->document_save();} );
 }
 
 bool DocumentWidget::document_new() {
@@ -67,6 +68,11 @@ bool DocumentWidget::document_new() {
 
     if(file->open(this->file_openModeFlags)) {
         file_textStream = new QTextStream(file);
+
+        this->fileName = this->calculateDocumentName(path);
+        // send signal that document name changed
+        emit(this->documentNameChanged(this->fileName));
+
         return true;
     }
 
@@ -79,12 +85,19 @@ bool DocumentWidget::document_new() {
 
 bool DocumentWidget::document_open(QString path) {
     file = new QFile(path);
+    this->fileName = this->calculateDocumentName(path);
 
     if(file->open(this->file_openModeFlags)) {
         file_textStream = new QTextStream(file);
+
+        // send signal that document name changed
+        emit(this->documentNameChanged(this->fileName));
+
         // TODO: need optimizations
         // read data from the file steam and write it to textEdit
         this->textEdit_widget->setText(file_textStream->readAll());
+        this->textEdit_widget->document()->setModified(false);
+
         return true;
     }
 
@@ -112,9 +125,6 @@ bool DocumentWidget::document_save() {
 
     // mark this document as not modified after saving
     this->textEdit_widget->document()->setModified(false);
-
-    // send signal that this document saved
-    emit(this->documentStateChanged(Saved));
 
     return true;
 }
@@ -145,11 +155,17 @@ QString DocumentWidget::calculateDocumentName(QString path) {
 }
 
 QString DocumentWidget::getDocumentName() {
-    return this->textEdit_widget->documentTitle();
+        return this->fileName;
 }
 
 DocumentWidget::~DocumentWidget() {
     delete textEdit_widget;
-    if(file != NULL) delete file;
-    if(file_textStream != NULL) delete file_textStream;
+
+    if(file_textStream != NULL)
+        delete file_textStream;
+
+    if(file != NULL) {
+        file->close();
+        delete file;
+    }
 }

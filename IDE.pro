@@ -27,12 +27,12 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     tabmanagement.cpp \
-    tabwidget.cpp
+    documentwidget.cpp
 
 HEADERS += \
         mainwindow.h \
     tabmanagement.h \
-    tabwidget.h
+    documentwidget.h
 
 FORMS += \
         mainwindow.ui

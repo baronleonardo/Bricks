@@ -2,7 +2,7 @@
 #define TABMANAGEMENT_H
 
 #include <QTabWidget>
-#include "tabwidget.h"
+#include "documentwidget.h"
 
 class TabManagement : public QTabWidget
 {
@@ -10,16 +10,25 @@ class TabManagement : public QTabWidget
 
 public:
     TabManagement(QWidget* parent = NULL);
+    QString getCurrentTabText();
     ~TabManagement();
 
 private:
-    TabWidget* tabWidget;
     const QString defaultTabName = "Untitled Document";
     QString openFileDialog();
+    void closeTab(int index, bool createNewTabIfLastOneClosed);
+
+signals:
+    void tabNameChanged(QString name);
+
+private slots:
+    void onTabDocumentModification(bool modified);
 
 public slots:
     void newTab();
+    void openTab(QString path);
     void openTab();
+    void closeTab(int index);
 };
 
 #endif // TABMANAGEMENT_H

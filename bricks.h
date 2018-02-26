@@ -17,6 +17,7 @@ public:
 
 private:
     Ui::Bricks *ui;
+    const QString appTitle = "Bricks";
 };
 
 #endif // BRICKS_H

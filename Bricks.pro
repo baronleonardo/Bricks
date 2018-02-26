@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
     tabmanagement.cpp \
     documentwidget.cpp \
-    bricks.cpp
+    bricks.cpp \
+    commandpalette.cpp
 
 HEADERS += \
     tabmanagement.h \
     documentwidget.h \
-    bricks.h
+    bricks.h \
+    commandpalette.h
 
 FORMS += \
     bricks.ui

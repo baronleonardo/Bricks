@@ -1,10 +1,10 @@
-#include "mainwindow.h"
+#include "bricks.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    Bricks w;
     w.show();
 
     return a.exec();

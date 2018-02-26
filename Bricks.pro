@@ -25,14 +25,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
     tabmanagement.cpp \
-    documentwidget.cpp
+    documentwidget.cpp \
+    bricks.cpp
 
 HEADERS += \
-        mainwindow.h \
     tabmanagement.h \
-    documentwidget.h
+    documentwidget.h \
+    bricks.h
 
 FORMS += \
-        mainwindow.ui
+    bricks.ui

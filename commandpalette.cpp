@@ -39,15 +39,15 @@ CommandPalette::CommandPalette(QWidget* parent) : QLineEdit(parent) {
     filter->setSourceModel(model);
 }
 
-void CommandPalette::addCommand(QString cmd, QString shortcut) {
+void CommandPalette::addCommand(QAction *action) {
     QFont font;
     font.setPointSize(QApplication::font().pointSize() - 2);
     font.setItalic(true);
 
     model->insertRow(0);
 
-    model->setData(model->index(0, 0), cmd);
-    model->setData(model->index(0, 1), shortcut);
+    model->setData(model->index(0, 0), action->text());
+    model->setData(model->index(0, 1), action->shortcut().toString());
     model->item(0, 1)->setFont(font);
 
     commandsCount++;
@@ -67,6 +67,7 @@ bool CommandPalette::eventFilter(QObject *obj, QEvent *ev) {
             this->setFocus();
             return true;
         }
+
     if (ev->type() == QEvent::KeyPress) {
         bool consumed = false;
         int key = static_cast<QKeyEvent*>(ev)->key();

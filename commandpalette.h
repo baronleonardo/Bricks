@@ -6,6 +6,7 @@
 #include <QTreeView>
 #include <QStandardItemModel>
 #include <QTimer>
+#include <QAction>
 #include "commandfilter.h"
 
 class CommandPalette : public QLineEdit
@@ -26,7 +27,7 @@ private:
     const int commandsTreeViewColCount = 2;
 
 private:
-    void addCommand(QString cmd, QString shortcut);
+    void addCommand(QAction* action);
     void removeCommand(int rowIndex);
     bool eventFilter(QObject *obj, QEvent *ev);
 

@@ -1,19 +1,65 @@
-#ifndef COMMANDS_H
-#define COMMANDS_H
+#ifndef COMMANDMANAGEMENT_H
+#define COMMANDMANAGEMENT_H
 
 #include <QObject>
+#include <QApplication>
+#include "commandpalette.h"
+#include "commandslotdb.h"
 
-class Commands : public QObject
+class CommandPaletteCommandManagement;
+
+class CommandManagement : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Commands(QObject *parent = nullptr);
-    ~Commands();
+    explicit CommandManagement( CommandPalette *commandpalette,
+                                QObject* parent = nullptr );
+    void createCommandsDB();
+    ~CommandManagement();
 
-signals:
+private:
+    const QString iniFilePath = QApplication::applicationFilePath() + ".ini";
+    CommandSlotDB* commandSlotDB;
+    CommandPaletteCommandManagement *commandPaletteCommandManagement;
+    QString commandPaletteShortcut;
+
+private:
+    void prepareCommandsSystem();
 
 public slots:
+    void enableCommand(QString cmd);
+    void disableCommand(QString cmd);
+    void onCommandActivation(QString cmd);
 };
 
-#endif // COMMANDS_H
+class CommandPaletteCommandManagement: public QObject {
+    Q_OBJECT
+
+public:
+    CommandPaletteCommandManagement( CommandPalette *commandPalette,
+                                     QWidget* parent = nullptr );
+    ~CommandPaletteCommandManagement();
+
+private:
+    CommandPalette* commandPalette = nullptr;
+
+private:
+    QString prepareCommand(QString cmd, bool toCommandPalette);
+
+public:
+    void addCommand(QString cmd, QString shortcut);
+    bool activateCommand(QString cmd);
+    bool deactivateCommand(QString cmd);
+
+signals:
+    void commandActivated(QString cmd);
+
+public slots:
+    void onCommandActivation(QString cmd);
+    void showCommandPalette();
+    void hideCommandPalette();
+    void toggleCommandPalette();
+};
+
+#endif // COMMANDMANAGEMENT_H

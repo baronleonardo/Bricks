@@ -15,6 +15,8 @@ class CommandPalette : public QLineEdit
 
 public:
     CommandPalette(QWidget* parent = nullptr);
+    void addCommand(QString cmd, QString shortcut, bool addEnabled = true);
+    void removeCommand(int rowIndex);
     ~CommandPalette();
 
 private:
@@ -27,14 +29,27 @@ private:
     const int commandsTreeViewColCount = 2;
 
 private:
-    void addCommand(QAction* action);
-    void removeCommand(int rowIndex);
     bool eventFilter(QObject *obj, QEvent *ev);
+
+public:
+    void setVisible(bool visible);
+    void setHidden(bool hidden);
+
+protected:
+    void focusOutEvent(QFocusEvent* event);
+
+signals:
+    void commandactivated(QString cmd);
+    void focusLost();
 
 private slots:
     void doneCompletion();
     void showCompletion();
     void autoSuggest();
+
+public slots:
+    bool enableCommand(QString cmd);
+    bool disableCommand(QString cmd);
 };
 
 #endif // COMMANDPALETTE_H

@@ -15,13 +15,8 @@ class DocumentWidget : public QWidget
 public:
     explicit DocumentWidget(QWidget *parent = nullptr);
     QString getDocumentName();
+    bool isModified();
     ~DocumentWidget();
-
-public:
-    enum DocumentState {
-        Modified,
-        Saved
-    };
 
 private:
     QTextEdit* textEdit_widget;
@@ -34,8 +29,8 @@ private:
 private:
     void configure_layout();
     void configure_textEdit_widget();
-    void configure_shortcuts();
     static QString calculateDocumentName(QString path);
+    bool document_save(bool saveAsNewFile);
 
 signals:
     void documentModified(bool changed);
@@ -45,6 +40,8 @@ public slots:
     bool document_new();
     bool document_open(QString path);
     bool document_save();
+    bool document_saveAs();
+    bool document_close();
     bool close();
 };
 

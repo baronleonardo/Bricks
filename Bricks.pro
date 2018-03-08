@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+CONFIG   += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,15 +29,22 @@ SOURCES += \
     tabmanagement.cpp \
     documentwidget.cpp \
     bricks.cpp \
-    commandpalette.cpp
+    commandpalette.cpp \
+    commandfilter.cpp \
     commandmanagement.cpp \
+    commandslotdb.cpp
 
 HEADERS += \
     tabmanagement.h \
     documentwidget.h \
     bricks.h \
-    commandpalette.h
+    commandpalette.h \
+    commandfilter.h \
     commandmanagement.h \
+    commandslotdb.h
 
 FORMS += \
     bricks.ui
+
+RESOURCES += \
+    resources.qrc

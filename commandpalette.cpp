@@ -39,16 +39,28 @@ CommandPalette::CommandPalette(QWidget* parent) : QLineEdit(parent) {
     filter->setSourceModel(model);
 }
 
-void CommandPalette::addCommand(QAction *action) {
+void CommandPalette::addCommand(QString cmd, QString shortcut, bool addEnabled) {
     QFont font;
     font.setPointSize(QApplication::font().pointSize() - 2);
     font.setItalic(true);
+    int rowIndex = model->rowCount();
 
-    model->insertRow(0);
+    model->insertRow(rowIndex);
 
-    model->setData(model->index(0, 0), action->text());
-    model->setData(model->index(0, 1), action->shortcut().toString());
-    model->item(0, 1)->setFont(font);
+    model->setData(model->index(rowIndex, 0), cmd);
+    model->setData(model->index(rowIndex, 1), shortcut);
+
+    QStandardItem* col0 = model->item(rowIndex, 0);
+    QStandardItem* col1 = model->item(rowIndex, 1);
+
+    col1->setFont(font);
+
+    if(!addEnabled) {
+        col0->setEnabled(false);
+        col0->setSelectable(false);
+        col1->setEnabled(false);
+        col1->setSelectable(false);
+    }
 
     commandsCount++;
 }
@@ -56,6 +68,36 @@ void CommandPalette::addCommand(QAction *action) {
 void CommandPalette::removeCommand(int rowIndex) {
     model->removeRow(rowIndex);
     commandsCount--;
+}
+
+bool CommandPalette::enableCommand(QString cmd) {
+    QList<QStandardItem*> items = model->findItems(cmd, Qt::MatchContains);
+    if(items.length() == 0)
+        return false;
+
+    int rowIndex = items[0]->row();
+
+    model->item(rowIndex, 0)->setEnabled(true);
+    model->item(rowIndex, 0)->setSelectable(true);
+    model->item(rowIndex, 1)->setEnabled(true);
+    model->item(rowIndex, 1)->setSelectable(true);
+
+    return true;
+}
+
+bool CommandPalette::disableCommand(QString cmd) {
+    QList<QStandardItem*> items = model->findItems(cmd, Qt::MatchWildcard);
+    if(items.length() == 0)
+        return false;
+
+    int rowIndex = items[0]->row();
+
+    model->item(rowIndex, 0)->setEnabled(false);
+    model->item(rowIndex, 0)->setSelectable(false);
+    model->item(rowIndex, 1)->setEnabled(false);
+    model->item(rowIndex, 1)->setSelectable(false);
+
+    return true;
 }
 
 bool CommandPalette::eventFilter(QObject *obj, QEvent *ev) {
@@ -105,6 +147,12 @@ bool CommandPalette::eventFilter(QObject *obj, QEvent *ev) {
     return false;
 }
 
+void CommandPalette::focusOutEvent(QFocusEvent* event) {
+    Q_UNUSED(event);
+    if(!popup->hasFocus())
+        emit(this->focusLost());
+}
+
 void CommandPalette::showCompletion() {
     popup->move( this->mapToGlobal(QPoint(0, this->height())) );
     popup->setColumnWidth(0, this->width() *  2/3);
@@ -125,6 +173,8 @@ void CommandPalette::doneCompletion() {
     if (item.isValid()) {
         this->setText(item.data().toString());
         QMetaObject::invokeMethod(this, "returnPressed");
+
+        emit(commandactivated(item.data().toString()));
     }
 }
 
@@ -134,9 +184,23 @@ void CommandPalette::autoSuggest() {
                                           Qt::CaseInsensitive,
                                           QRegExp::FixedString )
                                );
-
         showCompletion();
     }
+
+    else
+        filter->setFilterRegExp("");
+}
+
+void CommandPalette::setVisible(bool visible) {
+    QLineEdit::setVisible(visible);
+    this->setFocus();
+}
+
+void CommandPalette::setHidden(bool hidden) {
+    QLineEdit::setHidden(hidden);
+
+    if(!hidden)
+        this->setFocus();
 }
 
 CommandPalette::~CommandPalette() {

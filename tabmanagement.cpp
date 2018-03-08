@@ -1,21 +1,11 @@
 #include "tabmanagement.h"
 #include <QFileDialog>
 #include <QDir>
+#include <QShowEvent>
+#include "commandslotdb.h"
 
 TabManagement::TabManagement(QWidget* parent)
     : QTabWidget(parent) {
-
-    // shortcut for new tab
-    connect( new QShortcut(QKeySequence::New, this),
-             &QShortcut::activated,
-             this,
-             &TabManagement::newTab );
-
-    // shortcut for close current tab
-    connect( new QShortcut(QKeySequence("Ctrl+W"), this),
-             &QShortcut::activated,
-             [=]() {this->closeTab(this->currentIndex());} );
-
     // event on tab close
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
@@ -23,6 +13,28 @@ TabManagement::TabManagement(QWidget* parent)
     connect( this,
              &QTabWidget::currentChanged,
              [=](int tabIndex){ emit tabNameChanged(this->tabText(tabIndex)); } );
+}
+
+void TabManagement::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
+
+    if(event->type() == QShowEvent::Show) {
+        // register slots on this tabwidget shown
+        CommandSlotDB* commandSlotDB = CommandSlotDB::getInstance();
+        commandSlotDB->registerSlot( "new", this, _SLOT(newTab()) );
+        commandSlotDB->registerSlot( "open", this, _SLOT(openTab()) );
+        commandSlotDB->registerSlot( "save",
+                                     this,
+                                     _SLOT(qobject_cast<DocumentWidget *>
+                                           (currentWidget())->document_save())
+                                   );
+        commandSlotDB->registerSlot( "save_as",
+                                     this,
+                                     _SLOT(qobject_cast<DocumentWidget *>
+                                           (currentWidget())->document_saveAs())
+                                   );
+        commandSlotDB->registerSlot( "close", this, _SLOT(closeTab()) );
+    }
 }
 
 void TabManagement::newTab() {
@@ -80,23 +92,24 @@ void TabManagement::openTab() {
 }
 
 QString TabManagement::openFileDialog() {
-    return QFileDialog::getOpenFileName( this,
+    return QFileDialog::getOpenFileName( nullptr,
                                          tr("Open file"),
                                          QDir::homePath(),
                                          tr("All Files (*)") );
 }
 
-void TabManagement::closeTab(int index, bool createNewTabIfLastOneClosed) {
+bool TabManagement::closeTab(int index, bool createNewTabIfLastOneClosed) {
     if(index < 0)
-        return;
+        return false;
 
     DocumentWidget* widget = static_cast<DocumentWidget*>(this->widget(index));
 
     // close tab
-    if(widget->close()) {
-        delete widget;
+    if(widget->document_close())
         this->removeTab(index);
-    }
+
+    else
+        return false;
 
     // create new tab if the last tab closed
     if(createNewTabIfLastOneClosed && (this->count() == 0))
@@ -105,10 +118,29 @@ void TabManagement::closeTab(int index, bool createNewTabIfLastOneClosed) {
     if(this->count() != 0)
         // always focus the next available widget
         this->currentWidget()->setFocus();
+
+    return true;
 }
 
-void TabManagement::closeTab(int index) {
-    this->closeTab(index, true);
+bool TabManagement::closeTab(int index) {
+    return this->closeTab(index, true);
+}
+
+bool TabManagement::closeTab() {
+    return this->closeTab(this->currentIndex());
+}
+
+bool TabManagement::closeAllTabs() {
+    for(int iii = 0; iii < this->count(); ++iii) {
+        if( qobject_cast<DocumentWidget*>(this->widget(iii))->isModified() )
+            return this->closeTab(iii);
+    }
+
+    for(int iii = 0; iii < this->count(); ++iii) {
+        this->closeTab();
+    }
+
+    return true;
 }
 
 QString TabManagement::getCurrentTabText() {
@@ -118,7 +150,7 @@ QString TabManagement::getCurrentTabText() {
 TabManagement::~TabManagement() {
     // FIXME: we need to keep mainwindow open until finish that part
     // close every tab first
-    for(int iii = 0; iii < this->count(); ++iii) {
-        this->closeTab(iii, false);
-    }
+//    for(int iii = 0; iii < this->count(); ++iii) {
+//        this->closeTab(iii, false);
+//    }
 }

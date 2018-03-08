@@ -26,11 +26,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-        editor.cpp
+        editor.cpp \
+    findandreplace.cpp
 
 HEADERS += \
         mainwindow.h \
-        editor.h
+        editor.h \
+    findandreplace.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    find_and_replace.ui

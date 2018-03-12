@@ -32,8 +32,8 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
         editor.h \
-    findandreplace.h
+        findandreplace.h
 
 FORMS += \
         mainwindow.ui \
-    find_and_replace.ui
+        find_and_replace.ui

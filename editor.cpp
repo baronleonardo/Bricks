@@ -1,5 +1,4 @@
 #include "editor.h"
-#include <QTextDocumentFragment>
 
 Editor::Editor(QWidget *parent) :
     QPlainTextEdit(parent) {

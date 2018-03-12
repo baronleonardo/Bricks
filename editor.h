@@ -12,13 +12,11 @@ class Editor : public QPlainTextEdit
 
 public:
     Editor(QWidget* parent = NULL);
+    bool write(QTextStream* file_stream);
     ~Editor();
 
 private:
     FindAndReplace* findAndReplace;
-
-public:
-    bool write(QTextStream* file_stream);
 };
 
 #endif // EDITOR_H

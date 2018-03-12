@@ -5,91 +5,100 @@ FindAndReplace::FindAndReplace(QPlainTextEdit* parent) : QWidget(parent) {
     this->editor = parent;
 }
 
-void FindAndReplace::find(QString exp) {
-    int index;
-
-    if(editor->document()->isEmpty())
-        return;
-
-    if( this->findExp_cursor.isNull() )
-        this->findExp_cursor = editor->textCursor();
-
-    // search
-    index = editor->toPlainText().indexOf(exp, this->findExp_cursor.position());
-
-    //if found match
-    if(index != -1) {
-        foundSearchMatch = true;
-        canContinueSearchingFromTop = true;
-
-        // mark the matched exp
-        this->findExp_cursor.setPosition(index);
-        this->findExp_cursor.setPosition( this->findExp_cursor.position() + exp.length(),
-                                  QTextCursor::KeepAnchor );
-        // select it
-        editor->setTextCursor(this->findExp_cursor);
+void FindAndReplace::setRgExMode(bool enable) {
+    if(enable) {
+        findPtr = &FindAndReplace::_findRegEx;
+        findAllPtr = &FindAndReplace::_findRegEx;
     }
 
     else {
-        // try search from the top of the document
-        if(canContinueSearchingFromTop) {
-            canContinueSearchingFromTop = false;
-            this->findExp_cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
-            find(exp);
-        }
-
-        // show warning msg if no match at all
-        else if(!foundSearchMatch) {
-            QMessageBox::warning(editor, "Warning", "No match found");
-            foundSearchMatch = false;
-        }
+        findPtr = &FindAndReplace::_find;
+        findAllPtr = &FindAndReplace::_find;
     }
 }
 
-void FindAndReplace::findall(QString exp) {
-    if(editor->document()->isEmpty())
-        return;
+void FindAndReplace::setCaseSensitive(bool enable) {
+    if(enable) {
+        sensitivity = Qt::CaseSensitive;
+        this->flags |= QTextDocument::FindCaseSensitively;
+    }
 
-    int index;
+    else {
+        sensitivity = Qt::CaseInsensitive;
+        this->flags &= ~QTextDocument::FindCaseSensitively;
+    }
+}
+
+bool FindAndReplace::_find(QString exp, QTextDocument::FindFlags flags) {
+    return editor->find( exp, flags );
+}
+
+bool FindAndReplace::_findRegEx(QString exp, QTextDocument::FindFlags flags) {
+    return editor->find( QRegExp(exp, sensitivity), flags );
+}
+
+QTextCursor FindAndReplace::_find(QString exp, QTextCursor* cursor) {
+    return this->editor->document()->find(exp, *cursor, flags);
+}
+
+QTextCursor FindAndReplace::_findRegEx(QString exp, QTextCursor* cursor) {
+    return this->editor->document()->find( QRegExp(exp, sensitivity), *cursor, flags );
+}
+
+bool FindAndReplace::find(QString exp, bool backward) {
+    QTextDocument::FindFlags flags = this->flags;
+    bool found;
+
+    if(backward)
+        flags |= QTextDocument::FindBackward;
+
+    found = (this->*findPtr)(exp, flags);
+
+    if(!found) {
+        if(!editor->document()->isEmpty()) {
+            QMessageBox::warning(nullptr, "Warning", "No match found");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool FindAndReplace::findall(QString exp) {
+    if(editor->document()->isEmpty())
+        return false;
+
     QTextCursor cursor;
     QTextCharFormat findExp_format;
     findExp_format.setBackground(findExp_highlightColor);
 
     // move it the beginning of the document
     cursor = editor->textCursor();
-    cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+    cursor.movePosition(QTextCursor::Start);
 
-    // search
-    index = editor->toPlainText().indexOf(exp, cursor.position());
+    while (!(cursor = (this->*findAllPtr)(exp, &cursor)).isNull()) {
+        // save current search result properties for clearing it
+        // after finishing searching
+        searchResultList.append( { cursor.charFormat().background(),
+                                   cursor } );
 
-    if(index == -1)
-        QMessageBox::warning(editor, "Warning", "No match found");
-
-    else {
-        while (index != -1) {
-            // mark the matched exp
-            cursor.setPosition(index);
-            cursor.setPosition( cursor.position() + exp.length(),
-                                QTextCursor::KeepAnchor );
-
-            // save current search result properties for clearing it
-            // after finishing searching
-            searchResultList.append( { this->findExp_cursor.charFormat().background(),
-                                       cursor } );
-
-            // highlight it
-            cursor.mergeCharFormat(findExp_format);
-
-            // update search index
-            index = editor->toPlainText().indexOf(exp, cursor.position());
-        }
+        // highlight it
+        cursor.mergeCharFormat(findExp_format);
     }
+
+    if(searchResultList.length() == 0) {
+        QMessageBox::warning(nullptr, "Warning", "No match found");
+        return false;
+    }
+
+    return true;
 }
 
 void FindAndReplace::replace(QString exp, QString replacement) {
     // replacement is done by finding and highlighting `exp` first
     // then replace it
-    if(this->findExp_cursor.hasSelection())
+    // TODO: need better implementation
+    if(editor->textCursor().hasSelection())
         editor->insertPlainText(replacement);
 
     editor->find(exp);
@@ -100,17 +109,19 @@ void FindAndReplace::replaceall(QString exp, QString replacement) {
     QTextCursor cursor = editor->textCursor();
     cursor.beginEditBlock();
 
-    do {
-        editor->find(exp);
-        if(this->findExp_cursor.hasSelection())
-            editor->insertPlainText(replacement);
-    } while(this->canContinueSearchingFromTop == true);
+    while(editor->find(exp)) {
+//        if(editor->textCursor().hasSelection())
+        editor->insertPlainText(replacement);
+    }
 
     cursor.endEditBlock();
 }
 
 void FindAndReplace::clearSearchHighlight() {
     QTextCharFormat format;
+
+    if(searchResultList.isEmpty())
+        return;
 
     foreach (FindAndReplace::SearchResultProperties searchFoundProperties, searchResultList) {
         format.setBackground(searchFoundProperties.bg_color);
@@ -119,7 +130,6 @@ void FindAndReplace::clearSearchHighlight() {
 
     searchResultList.clear();
 }
-
 
 FindAndReplace::~FindAndReplace() {
 

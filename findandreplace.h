@@ -5,6 +5,7 @@
 #include <QTextCursor>
 #include <QList>
 #include <QPlainTextEdit>
+#include <QRegExp>
 
 class FindAndReplace : public QWidget
 {
@@ -22,21 +23,30 @@ private:
 
 private:
     QPlainTextEdit* editor;
+    QTextDocument::FindFlags flags = 0;
+    QRegExp::PatternSyntax regExpPattern = QRegExp::FixedString;
+    Qt::CaseSensitivity sensitivity = Qt::CaseInsensitive;
 
     // `find` variables
     QTextCursor findExp_cursor;
-    bool canContinueSearchingFromTop = true;
-    bool foundSearchMatch = false;
+    bool (FindAndReplace::* findPtr)(QString, QTextDocument::FindFlags) = &FindAndReplace::_find;
 
     // `findall` variables
+    QTextCursor (FindAndReplace::* findAllPtr)(QString, QTextCursor*) = &FindAndReplace::_find;
     const Qt::GlobalColor findExp_highlightColor = Qt::yellow;
     QList<SearchResultProperties> searchResultList;
 
-public:
-    // TODO: need to search by regex too
-    // find here will start searching from the cursor position
-    void find(QString exp);
-    void findall(QString exp);
+private:
+    bool _find(QString exp, QTextDocument::FindFlags flags);
+    QTextCursor _find(QString exp, QTextCursor* cursor);
+    bool _findRegEx(QString exp, QTextDocument::FindFlags flags);
+    QTextCursor _findRegEx(QString exp, QTextCursor* cursor);
+
+public slots:
+    void setRgExMode(bool enable);
+    void setCaseSensitive(bool enable);
+    bool find(QString exp, bool backward=false);
+    bool findall(QString exp);
     void replace(QString exp, QString replacement);
     void replaceall(QString exp, QString replacement);
     void clearSearchHighlight();

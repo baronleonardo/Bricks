@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FindAndReplace</class>
- <widget class="QWidget" name="FindAndReplace">
+ <class>FindAndReplaceUI</class>
+ <widget class="QPlainTextEdit" name="FindAndReplaceUI">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="findAndReplace_Widget" native="true">
+  <widget class="FindAndReplace" name="findAndReplace_Widget" native="true">
    <property name="geometry">
     <rect>
      <x>0</x>
@@ -318,6 +318,14 @@ Sensitive</string>
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FindAndReplace</class>
+   <extends>QWidget</extends>
+   <header>findandreplace.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

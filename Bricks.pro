@@ -24,15 +24,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
+    main.cpp \
     tabmanagement.cpp \
     documentwidget.cpp \
+    editor.cpp \
+    findandreplace.cpp \
     bricks.cpp
 
 HEADERS += \
     tabmanagement.h \
     documentwidget.h \
+    editor.h \
+    findandreplace.h \
     bricks.h
 
 FORMS += \
-    bricks.ui
+    bricks.ui \
+    find_and_replace.ui
+

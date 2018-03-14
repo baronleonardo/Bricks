@@ -5,10 +5,11 @@
 #-------------------------------------------------
 
 QT       += core gui
+CONFIG   += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = IDE
+TARGET = Bricks
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -29,16 +30,26 @@ SOURCES += \
     documentwidget.cpp \
     editor.cpp \
     findandreplace.cpp \
-    bricks.cpp
+    bricks.cpp \
+    commandpalette.cpp \
+    commandfilter.cpp \
+    commandmanagement.cpp \
+    commandslotdb.cpp
 
 HEADERS += \
     tabmanagement.h \
     documentwidget.h \
     editor.h \
     findandreplace.h \
-    bricks.h
+    bricks.h \
+    commandpalette.h \
+    commandfilter.h \
+    commandmanagement.h \
+    commandslotdb.h
 
 FORMS += \
     bricks.ui \
     find_and_replace.ui
 
+RESOURCES += \
+    resources.qrc

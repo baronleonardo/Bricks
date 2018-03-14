@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ini">
+        <file>shortcuts.ini</file>
+    </qresource>
+</RCC>

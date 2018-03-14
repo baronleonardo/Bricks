@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QTextDocument>
+#include <functional>
+#include "commandslotdb.h"
 
 DocumentWidget::DocumentWidget(QWidget *parent)
     : QWidget(parent) {
@@ -21,9 +23,6 @@ DocumentWidget::DocumentWidget(QWidget *parent)
     // set this layout as the default one
     this->setLayout(layout);
 
-    // create and configure actions
-    this->configure_shortcuts();
-
     // send signal on document modification
     connect( textEdit_widget->document(),
              &QTextDocument::modificationChanged,
@@ -38,22 +37,7 @@ void DocumentWidget::configure_layout() {
 void DocumentWidget::configure_textEdit_widget() {
     // focus textedit widget if this document widget gets focused
     this->setFocusProxy(textEdit_widget);
-}
-
-void DocumentWidget::configure_shortcuts() {
-    // TODO: all shortcuts will be moved to one class
-
-    // `save` file
-    connect( new QShortcut(QKeySequence::Save, this),
-             &QShortcut::activated,
-             this,
-             &DocumentWidget::document_save );
-
-    // `save as` file
-    connect( new QShortcut(QKeySequence("Ctrl+Shift+S"), this),
-             &QShortcut::activated,
-             this,
-             [=](){this->document_new(); this->document_save();} );
+    textEdit_widget->setLineWrapMode(QTextEdit::NoWrap);
 }
 
 bool DocumentWidget::document_new() {
@@ -108,13 +92,13 @@ bool DocumentWidget::document_open(QString path) {
     }
 }
 
-bool DocumentWidget::document_save() {
+bool DocumentWidget::document_save(bool saveAsNewFile) {
     // TODO: check if failed to save
     if( textEdit_widget->document()->isEmpty() )
         return false;
 
     // if new file
-    else if(this->file_textStream == NULL) {
+    else if(this->file_textStream == NULL || saveAsNewFile) {
         // create new document
         if(!document_new())
             return false;
@@ -129,9 +113,20 @@ bool DocumentWidget::document_save() {
     return true;
 }
 
-bool DocumentWidget::close() {
+bool DocumentWidget::document_save() {
+    if(this->textEdit_widget->document()->isModified())
+        return this->document_save(false);
+
+    return false;
+}
+
+bool DocumentWidget::document_saveAs() {
+    return this->document_save(true);
+}
+
+bool DocumentWidget::document_close() {
     if(textEdit_widget->document()->isModified()) {
-        int buttonIndex = QMessageBox::warning( this,
+        int buttonIndex = QMessageBox::warning( nullptr,
                                                 "Close Document",
                                                 "Save changes ?",
                                                 "Yes",
@@ -140,13 +135,19 @@ bool DocumentWidget::close() {
                                                 2 );
 
         if( buttonIndex == 0 )
-            this->document_save();
+            return this->document_save();
         else if( buttonIndex == 2 )
             return false;
     }
 
-    // call the widget closs function
-    return this->QWidget::close();
+    return true;
+}
+
+bool DocumentWidget::close() {
+    if(document_close())
+        return QWidget::close();
+
+    return false;
 }
 
 QString DocumentWidget::calculateDocumentName(QString path) {
@@ -155,7 +156,11 @@ QString DocumentWidget::calculateDocumentName(QString path) {
 }
 
 QString DocumentWidget::getDocumentName() {
-        return this->fileName;
+    return this->fileName;
+}
+
+bool DocumentWidget::isModified() {
+    return textEdit_widget->document()->isModified();
 }
 
 DocumentWidget::~DocumentWidget() {

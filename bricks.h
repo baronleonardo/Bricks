@@ -2,6 +2,8 @@
 #define BRICKS_H
 
 #include <QMainWindow>
+#include <QCloseEvent>
+#include "commandmanagement.h"
 
 namespace Ui {
 class Bricks;
@@ -15,9 +17,13 @@ public:
     explicit Bricks(QWidget *parent = 0);
     ~Bricks();
 
+protected:
+    void closeEvent(QCloseEvent* event);
+
 private:
     Ui::Bricks *ui;
-    const QString appTitle = "Bricks";
+    CommandManagement* commandManagement = nullptr;
+    const QString appTitle = tr("Bricks");
 };
 
 #endif // BRICKS_H

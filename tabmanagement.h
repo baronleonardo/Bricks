@@ -14,9 +14,12 @@ public:
     ~TabManagement();
 
 private:
-    const QString defaultTabName = "Untitled Document";
+    const QString defaultTabName = tr("Untitled Document");
     QString openFileDialog();
-    void closeTab(int index, bool createNewTabIfLastOneClosed);
+    bool closeTab(int index, bool createNewTabIfLastOneClosed);
+
+protected:
+    void showEvent(QShowEvent* event);
 
 signals:
     void tabNameChanged(QString name);
@@ -28,7 +31,9 @@ public slots:
     void newTab();
     void openTab(QString path);
     void openTab();
-    void closeTab(int index);
+    bool closeTab(int index);
+    bool closeTab();
+    bool closeAllTabs();
 };
 
 #endif // TABMANAGEMENT_H

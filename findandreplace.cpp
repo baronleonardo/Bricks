@@ -1,20 +1,70 @@
 #include "findandreplace.h"
 #include <QMessageBox>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QCheckBox>
 
-FindAndReplace::FindAndReplace(QPlainTextEdit* parent) : QWidget(parent) {
+FindAndReplace::FindAndReplace(QPlainTextEdit *parent) :
+    QWidget(parent),
+    findAndReplaceUi(new Ui::FindAndReplaceUI) {
     this->editor = parent;
+    findAndReplaceUi->setupUi(this);
+
+    // find next
+    connect( findAndReplaceUi->find_NextBtn,
+             &QPushButton::clicked,
+             this,
+             [=](){
+                      if( !find(findAndReplaceUi->find_LineEdit->text()) )
+                          QMessageBox::warning(nullptr, "Warning", "No match found");
+                  } );
+    // find previous
+    connect( findAndReplaceUi->find_PreviousBtn,
+             &QPushButton::clicked,
+             this,
+             [=](){
+                      if( !find(findAndReplaceUi->find_LineEdit->text(), true) )
+                          QMessageBox::warning(nullptr, "Warning", "No match found");
+                  } );
+    // find all
+    connect( findAndReplaceUi->findAll_Btn,
+             &QPushButton::clicked,
+             this,
+             [=](){
+                      if( !findall(findAndReplaceUi->find_LineEdit->text()) )
+                          QMessageBox::warning(nullptr, "Warning", "No match found");
+                  } );
+    // replace
+    connect( findAndReplaceUi->replace_Btn,
+             &QPushButton::clicked,
+             this,
+             [=](){ replace(findAndReplaceUi->find_LineEdit->text(),
+                            findAndReplaceUi->replace_LineEdit->text()); } );
+    // replace all
+    connect( findAndReplaceUi->replaceAll_Btn,
+             &QPushButton::clicked,
+             this,
+             [=](){ replaceall(findAndReplaceUi->find_LineEdit->text(),
+                               findAndReplaceUi->replace_LineEdit->text()); } );
+    // search mode - plain text, Regular expression
+    connect( findAndReplaceUi->searchMode,
+             QOverload<int>::of(&QComboBox::currentIndexChanged),
+             this,
+             [=](int value){ setRgExMode(value); } );
+    // case sensitivity
+    connect( findAndReplaceUi->caseSensitive_checkbox,
+             &QCheckBox::clicked,
+             this,
+             [=](bool checked){ setCaseSensitive(checked); } );
 }
 
 void FindAndReplace::setRgExMode(bool enable) {
-    if(enable) {
+    if(enable)
         findPtr = &FindAndReplace::_findRegEx;
-        findAllPtr = &FindAndReplace::_findRegEx;
-    }
 
-    else {
+    else
         findPtr = &FindAndReplace::_find;
-        findAllPtr = &FindAndReplace::_find;
-    }
 }
 
 void FindAndReplace::setCaseSensitive(bool enable) {
@@ -29,44 +79,53 @@ void FindAndReplace::setCaseSensitive(bool enable) {
     }
 }
 
-bool FindAndReplace::_find(QString exp, QTextDocument::FindFlags flags) {
-    return editor->find( exp, flags );
-}
-
-bool FindAndReplace::_findRegEx(QString exp, QTextDocument::FindFlags flags) {
-    return editor->find( QRegExp(exp, sensitivity), flags );
-}
-
-QTextCursor FindAndReplace::_find(QString exp, QTextCursor* cursor) {
+QTextCursor FindAndReplace::_find(QString exp,
+                                  QTextCursor* cursor,
+                                  QTextDocument::FindFlags flags) {
     return this->editor->document()->find(exp, *cursor, flags);
 }
 
-QTextCursor FindAndReplace::_findRegEx(QString exp, QTextCursor* cursor) {
-    return this->editor->document()->find( QRegExp(exp, sensitivity), *cursor, flags );
+QTextCursor FindAndReplace::_findRegEx(QString exp,
+                                       QTextCursor* cursor,
+                                       QTextDocument::FindFlags flags) {
+    return this->editor->document()->find( QRegExp(exp, sensitivity),
+                                           *cursor,
+                                           flags );
 }
 
 bool FindAndReplace::find(QString exp, bool backward) {
     QTextDocument::FindFlags flags = this->flags;
-    bool found;
 
     if(backward)
         flags |= QTextDocument::FindBackward;
 
-    found = (this->*findPtr)(exp, flags);
+    QTextCursor cursor = editor->textCursor();
+    cursor = (this->*findPtr)(exp, &cursor, flags);
 
-    if(!found) {
-        if(!editor->document()->isEmpty()) {
-            QMessageBox::warning(nullptr, "Warning", "No match found");
-            return false;
-        }
+    if(!cursor.isNull()) {
+        canContinueSearchingFromTop = true;
+        editor->setTextCursor(cursor);
+        return true;
     }
 
-    return true;
+    else if(canContinueSearchingFromTop) {
+        canContinueSearchingFromTop = false;
+        backward ? editor->moveCursor(QTextCursor::End) :
+                   editor->moveCursor(QTextCursor::Start);
+        find(exp, backward);
+        return true;
+    }
+
+    else
+        return false;
 }
 
 bool FindAndReplace::findall(QString exp) {
     if(editor->document()->isEmpty())
         return false;
+
+    if(!searchResultList.isEmpty())
+        clearSearchHighlight();
 
     QTextCursor cursor;
     QTextCharFormat findExp_format;
@@ -76,7 +135,7 @@ bool FindAndReplace::findall(QString exp) {
     cursor = editor->textCursor();
     cursor.movePosition(QTextCursor::Start);
 
-    while (!(cursor = (this->*findAllPtr)(exp, &cursor)).isNull()) {
+    while (!(cursor = (this->*findPtr)(exp, &cursor, flags)).isNull()) {
         // save current search result properties for clearing it
         // after finishing searching
         searchResultList.append( { cursor.charFormat().background(),
@@ -86,10 +145,8 @@ bool FindAndReplace::findall(QString exp) {
         cursor.mergeCharFormat(findExp_format);
     }
 
-    if(searchResultList.length() == 0) {
-        QMessageBox::warning(nullptr, "Warning", "No match found");
+    if(searchResultList.length() == 0)
         return false;
-    }
 
     return true;
 }
@@ -97,24 +154,25 @@ bool FindAndReplace::findall(QString exp) {
 void FindAndReplace::replace(QString exp, QString replacement) {
     // replacement is done by finding and highlighting `exp` first
     // then replace it
-    // TODO: need better implementation
     if(editor->textCursor().hasSelection())
         editor->insertPlainText(replacement);
 
-    editor->find(exp);
+    this->find(exp);
 }
 
 void FindAndReplace::replaceall(QString exp, QString replacement) {
+    QTextCursor old_cursor = editor->textCursor();
+    editor->moveCursor(QTextCursor::Start);
+
     // mark all change in replacement as once block to be undo at one time
-    QTextCursor cursor = editor->textCursor();
-    cursor.beginEditBlock();
+    old_cursor.beginEditBlock();
 
-    while(editor->find(exp)) {
-//        if(editor->textCursor().hasSelection())
+    while(editor->find(exp))
         editor->insertPlainText(replacement);
-    }
 
-    cursor.endEditBlock();
+    old_cursor.endEditBlock();
+
+    editor->setTextCursor(old_cursor);
 }
 
 void FindAndReplace::clearSearchHighlight() {
@@ -132,5 +190,5 @@ void FindAndReplace::clearSearchHighlight() {
 }
 
 FindAndReplace::~FindAndReplace() {
-
+    delete findAndReplaceUi;
 }

@@ -4,7 +4,6 @@
 #include <QPlainTextEdit>
 #include <QWidget>
 #include <QTextStream>
-#include "findandreplace.h"
 
 class Editor : public QPlainTextEdit
 {
@@ -14,9 +13,6 @@ public:
     Editor(QWidget* parent = NULL);
     bool write(QTextStream* file_stream);
     ~Editor();
-
-private:
-    FindAndReplace* findAndReplace;
 };
 
 #endif // EDITOR_H

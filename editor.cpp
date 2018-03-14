@@ -3,8 +3,6 @@
 Editor::Editor(QWidget *parent) :
     QPlainTextEdit(parent) {
     this->setLineWrapMode(QPlainTextEdit::NoWrap);
-
-    findAndReplace = new FindAndReplace(this);
 }
 
 bool Editor::write(QTextStream* file_stream) {
@@ -18,5 +16,4 @@ bool Editor::write(QTextStream* file_stream) {
 }
 
 Editor::~Editor() {
-    delete findAndReplace;
 }

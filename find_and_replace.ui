@@ -1,314 +1,303 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>FindAndReplaceUI</class>
- <widget class="QPlainTextEdit" name="FindAndReplaceUI">
+ <widget class="QWidget" name="FindAndReplaceUI">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>118</height>
+    <height>127</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="FindAndReplace" name="findAndReplace_Widget" native="true">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>400</width>
-     <height>118</height>
-    </rect>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>0</number>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_5">
-      <property name="spacing">
-       <number>4</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="close_Btn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset theme="window-close">
-          <normaloff>.</normaloff>.</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_6">
-      <property name="spacing">
-       <number>4</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <property name="spacing">
-         <number>4</number>
-        </property>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <property name="spacing">
-           <number>4</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="search_Layout">
-            <property name="spacing">
-             <number>4</number>
-            </property>
-            <item>
-             <widget class="QLineEdit" name="find_LineEdit">
-              <property name="inputMask">
-               <string/>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="maxLength">
-               <number>32767</number>
-              </property>
-              <property name="placeholderText">
-               <string>Find</string>
-              </property>
-              <property name="clearButtonEnabled">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="find_NextBtn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="toolTip">
-               <string>find next</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset theme="down">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="find_PreviousBtn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="toolTip">
-               <string>find previous</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset theme="up">
-                <normaloff>.</normaloff>.</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="findAll_Btn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="text">
-               <string>Find All</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="replace_Layout">
-            <property name="spacing">
-             <number>4</number>
-            </property>
-            <item>
-             <widget class="QLineEdit" name="replace_LineEdit">
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="placeholderText">
-               <string>Replace</string>
-              </property>
-              <property name="clearButtonEnabled">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="replace_Btn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="toolTip">
-               <string>replace</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset theme="edit-find-replace">
-                <normaloff>../../../../../../../home/leo-0</normaloff>../../../../../../../home/leo-0</iconset>
-              </property>
-              <property name="flat">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="replaceAll_Btn">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="focusPolicy">
-               <enum>Qt::ClickFocus</enum>
-              </property>
-              <property name="text">
-               <string>Replace All</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <property name="spacing">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="QComboBox" name="searchMode">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-          <property name="minimumContentsLength">
-           <number>10</number>
-          </property>
-          <item>
-           <property name="text">
-            <string>Plain text</string>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="close_Btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset theme="window-close">
+         <normaloff>.</normaloff>.</iconset>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_6">
+     <property name="spacing">
+      <number>4</number>
+     </property>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="search_Layout">
+           <property name="spacing">
+            <number>4</number>
            </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Regex</string>
+           <item>
+            <widget class="QLineEdit" name="find_LineEdit">
+             <property name="inputMask">
+              <string/>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="maxLength">
+              <number>32767</number>
+             </property>
+             <property name="placeholderText">
+              <string>Find</string>
+             </property>
+             <property name="clearButtonEnabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="find_NextBtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>find next</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="down">
+               <normaloff>.</normaloff>.</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="find_PreviousBtn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>find previous</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="up">
+               <normaloff>.</normaloff>.</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="findAll_Btn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="text">
+              <string>Find All</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="replace_Layout">
+           <property name="spacing">
+            <number>4</number>
            </property>
-          </item>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox">
+           <item>
+            <widget class="QLineEdit" name="replace_LineEdit">
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="placeholderText">
+              <string>Replace</string>
+             </property>
+             <property name="clearButtonEnabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="replace_Btn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="toolTip">
+              <string>replace</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="edit-find-replace">
+               <normaloff>../../../../../../../home/leo-0</normaloff>../../../../../../../home/leo-0</iconset>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="replaceAll_Btn">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="focusPolicy">
+              <enum>Qt::ClickFocus</enum>
+             </property>
+             <property name="text">
+              <string>Replace All</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QComboBox" name="searchMode">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <property name="sizeAdjustPolicy">
+          <enum>QComboBox::AdjustToContents</enum>
+         </property>
+         <property name="minimumContentsLength">
+          <number>10</number>
+         </property>
+         <item>
           <property name="text">
-           <string>Case
-Sensitive</string>
+           <string>Plain text</string>
           </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </item>
-   </layout>
-   <addaction name="actionClose"/>
-  </widget>
+         </item>
+         <item>
+          <property name="text">
+           <string>Regex</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="caseSensitive_checkbox">
+         <property name="text">
+          <string>Case
+Sensitive</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
   <action name="actionClose">
    <property name="text">
     <string>Close</string>
@@ -317,48 +306,8 @@ Sensitive</string>
     <string>Esc</string>
    </property>
   </action>
+  <addaction name="actionClose"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>FindAndReplace</class>
-   <extends>QWidget</extends>
-   <header>findandreplace.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>close_Btn</sender>
-   <signal>clicked()</signal>
-   <receiver>findAndReplace_Widget</receiver>
-   <slot>deleteLater()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>15</x>
-     <y>26</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>10</x>
-     <y>101</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionClose</sender>
-   <signal>triggered()</signal>
-   <receiver>findAndReplace_Widget</receiver>
-   <slot>deleteLater()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>58</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

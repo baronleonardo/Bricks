@@ -16,10 +16,13 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <property name="leftMargin">
-     <number>0</number>
+     <number>6</number>
     </property>
     <property name="rightMargin">
-     <number>0</number>
+     <number>6</number>
+    </property>
+    <property name="bottomMargin">
+     <number>6</number>
     </property>
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="commandPatternLayout">
@@ -41,11 +44,11 @@
       </item>
       <item>
        <widget class="CommandPalette" name="commandPalette">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
         <property name="clearButtonEnabled">
          <bool>true</bool>
-        </property>
-        <property name="visible">
-           <bool>false</bool>
         </property>
        </widget>
       </item>

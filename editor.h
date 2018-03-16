@@ -12,6 +12,9 @@ class Editor : public QPlainTextEdit
 public:
     Editor(QWidget* parent = NULL);
     bool write(QTextStream* file_stream);
+    void setModified(bool modified);
+    bool isModified();
+    bool isEmpty();
     ~Editor();
 };
 

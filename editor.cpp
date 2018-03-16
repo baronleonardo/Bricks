@@ -15,5 +15,17 @@ bool Editor::write(QTextStream* file_stream) {
     return true;
 }
 
+void Editor::setModified(bool modified) {
+    this->document()->setModified(modified);
+}
+
+bool Editor::isModified() {
+    return this->document()->isModified();
+}
+
+bool Editor::isEmpty() {
+    return this->document()->isEmpty();
+}
+
 Editor::~Editor() {
 }

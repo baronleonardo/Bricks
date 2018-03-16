@@ -16,6 +16,10 @@ public:
     explicit FindAndReplace(QPlainTextEdit *parent);
     ~FindAndReplace();
 
+protected:
+    void showEvent(QShowEvent* event);
+    void keyReleaseEvent(QKeyEvent* event);
+
 private:
     struct SearchResultProperties {
         QBrush bg_color;

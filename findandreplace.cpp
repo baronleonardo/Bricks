@@ -59,6 +59,13 @@ FindAndReplace::FindAndReplace(QPlainTextEdit *parent) :
              [=](bool checked){ setCaseSensitive(checked); } );
 }
 
+void FindAndReplace::keyReleaseEvent(QKeyEvent* event) {
+    if(event->key() == Qt::Key_Escape)
+        this->close();
+
+    QWidget::keyReleaseEvent(event);
+}
+
 void FindAndReplace::setRgExMode(bool enable) {
     if(enable)
         findPtr = &FindAndReplace::_findRegEx;
@@ -96,6 +103,9 @@ QTextCursor FindAndReplace::_findRegEx(QString exp,
 bool FindAndReplace::find(QString exp, bool backward) {
     QTextDocument::FindFlags flags = this->flags;
 
+    if(editor->document()->isEmpty())
+        return true;
+
     if(backward)
         flags |= QTextDocument::FindBackward;
 
@@ -122,7 +132,7 @@ bool FindAndReplace::find(QString exp, bool backward) {
 
 bool FindAndReplace::findall(QString exp) {
     if(editor->document()->isEmpty())
-        return false;
+        return true;
 
     if(!searchResultList.isEmpty())
         clearSearchHighlight();
@@ -187,6 +197,12 @@ void FindAndReplace::clearSearchHighlight() {
     }
 
     searchResultList.clear();
+}
+
+void FindAndReplace::showEvent(QShowEvent* event) {
+    if(event->type() == QShowEvent::Show)
+        findAndReplaceUi->find_LineEdit->setFocus();
+    QWidget::showEvent(event);
 }
 
 FindAndReplace::~FindAndReplace() {

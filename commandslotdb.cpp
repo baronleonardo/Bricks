@@ -1,5 +1,4 @@
 #include "commandslotdb.h"
-#include <QDebug>
 
 CommandSlotDB* CommandSlotDB::getInstance(){
     static CommandSlotDB singletonInstance;

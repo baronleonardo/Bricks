@@ -4,7 +4,6 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QTextDocument>
-#include <functional>
 #include "commandslotdb.h"
 
 DocumentWidget::DocumentWidget(QWidget *parent)
@@ -12,9 +11,13 @@ DocumentWidget::DocumentWidget(QWidget *parent)
     // delete this widget on close
     this->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    // create text edit widget
-    textEdit_widget = new QTextEdit(this);
+    // create new editor
+    editor = new Editor(this);
     this->configure_textEdit_widget();
+
+    // create new find and replace widget
+    findAndReplace = new FindAndReplace(editor);
+    this->configure_findAndReplaceWidget();
 
     // create layout
     layout = new QGridLayout(this);
@@ -24,20 +27,28 @@ DocumentWidget::DocumentWidget(QWidget *parent)
     this->setLayout(layout);
 
     // send signal on document modification
-    connect( textEdit_widget->document(),
-             &QTextDocument::modificationChanged,
+    connect( editor,
+             &Editor::modificationChanged,
              [=](bool changed){emit this->documentModified(changed);});
 }
 
 void DocumentWidget::configure_layout() {
-    layout->addWidget(textEdit_widget);
+    layout->addWidget(editor);
+    layout->addWidget(findAndReplace);
     layout->setContentsMargins(0, 0, 0, 0);
 }
 
 void DocumentWidget::configure_textEdit_widget() {
     // focus textedit widget if this document widget gets focused
-    this->setFocusProxy(textEdit_widget);
-    textEdit_widget->setLineWrapMode(QTextEdit::NoWrap);
+    this->setFocusProxy(editor);
+    editor->setLineWrapMode(Editor::NoWrap);
+}
+
+void DocumentWidget::configure_findAndReplaceWidget() {
+    findAndReplace->close();
+    CommandSlotDB::getInstance()->registerSlot( "find_and_replace",
+                                                this,
+                                                _SLOT(findAndReplace->show()) );
 }
 
 bool DocumentWidget::document_new() {
@@ -79,8 +90,8 @@ bool DocumentWidget::document_open(QString path) {
 
         // TODO: need optimizations
         // read data from the file steam and write it to textEdit
-        this->textEdit_widget->setText(file_textStream->readAll());
-        this->textEdit_widget->document()->setModified(false);
+        this->editor->write(file_textStream);
+        this->editor->document()->setModified(false);
 
         return true;
     }
@@ -94,7 +105,7 @@ bool DocumentWidget::document_open(QString path) {
 
 bool DocumentWidget::document_save(bool saveAsNewFile) {
     // TODO: check if failed to save
-    if( textEdit_widget->document()->isEmpty() )
+    if( editor->document()->isEmpty() )
         return false;
 
     // if new file
@@ -104,17 +115,17 @@ bool DocumentWidget::document_save(bool saveAsNewFile) {
             return false;
     }
 
-    *file_textStream << textEdit_widget->toPlainText();
+    *file_textStream << editor->toPlainText();
     file_textStream->flush();
 
     // mark this document as not modified after saving
-    this->textEdit_widget->document()->setModified(false);
+    this->editor->document()->setModified(false);
 
     return true;
 }
 
 bool DocumentWidget::document_save() {
-    if(this->textEdit_widget->document()->isModified())
+    if(this->editor->isModified())
         return this->document_save(false);
 
     return false;
@@ -125,7 +136,7 @@ bool DocumentWidget::document_saveAs() {
 }
 
 bool DocumentWidget::document_close() {
-    if(textEdit_widget->document()->isModified()) {
+    if(editor->isModified()) {
         int buttonIndex = QMessageBox::warning( nullptr,
                                                 "Close Document",
                                                 "Save changes ?",
@@ -160,11 +171,11 @@ QString DocumentWidget::getDocumentName() {
 }
 
 bool DocumentWidget::isModified() {
-    return textEdit_widget->document()->isModified();
+    return editor->isModified();
 }
 
 DocumentWidget::~DocumentWidget() {
-    delete textEdit_widget;
+    delete editor;
 
     if(file_textStream != NULL)
         delete file_textStream;

@@ -2,11 +2,12 @@
 #define DOCUMENTWIDGET_H
 
 #include <QWidget>
-#include <QTextEdit>
 #include <QGridLayout>
 #include <QFile>
 #include <QTextStream>
 #include <QShortcut>
+#include "editor.h"
+#include "findandreplace.h"
 
 class DocumentWidget : public QWidget
 {
@@ -19,7 +20,8 @@ public:
     ~DocumentWidget();
 
 private:
-    QTextEdit* textEdit_widget;
+    Editor* editor;
+    FindAndReplace* findAndReplace;
     QGridLayout* layout;
     QFile* file = NULL;
     QTextStream* file_textStream = NULL;
@@ -29,6 +31,7 @@ private:
 private:
     void configure_layout();
     void configure_textEdit_widget();
+    void configure_findAndReplaceWidget();
     static QString calculateDocumentName(QString path);
     bool document_save(bool saveAsNewFile);
 

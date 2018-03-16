@@ -43,6 +43,10 @@ Bricks::Bricks(QWidget *parent) :
                 break;
             }
         }
+
+        // if filepath is wrong, exit
+        if(ui->tabWidget->count() == 0)
+            exit(-1);
     }
 }
 

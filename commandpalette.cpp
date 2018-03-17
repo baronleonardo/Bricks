@@ -34,7 +34,7 @@ CommandPalette::CommandPalette(QWidget* parent) : QLineEdit(parent) {
              &CommandPalette::showCompletion);
 
     // if the command palette hold an old triggered command
-    // u can just trigger it without opening popup
+    // u can just re-trigger it without opening popup
     connect( new QShortcut(QKeySequence(Qt::Key_Return), this),
              &QShortcut::activated,
              this,
